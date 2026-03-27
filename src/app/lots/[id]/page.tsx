@@ -36,6 +36,18 @@ export default function LotDetailPage() {
 
   const userIsAdmin = currentUser && isAdmin(currentUser.role)
 
+  async function handleDeleteMyEvaluation() {
+    if (!confirm('Удалить вашу оценку этого лота?')) return
+    const res = await fetch(`/api/lots/${id}/evaluate`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+    if (res.ok) {
+      setLot((p) => p ? { ...p, hasEvaluated: false, evaluationsCount: p.evaluationsCount - 1 } : p)
+      setEvaluations((prev) => prev.filter((e) => {
+        const evalUserId = (e as unknown as { userId?: string }).userId
+        return evalUserId !== currentUser?.userId
+      }))
+    }
+  }
+
   async function handleArchive() {
     if (!confirm('Переместить лот в архив?')) return
     setArchiving(true)
@@ -169,9 +181,15 @@ export default function LotDetailPage() {
                 {lot.hasEvaluated ? 'Изменить оценку' : 'Оценить'}
               </Link>
               {lot.hasEvaluated && (
-                <Link href={`/lots/${id}/scores`} className="px-4 py-2 bg-dark text-white font-semibold rounded-lg hover:bg-warm-900 transition-colors text-sm">
-                  Оценки ({lot.evaluationsCount})
-                </Link>
+                <>
+                  <Link href={`/lots/${id}/scores`} className="px-4 py-2 bg-dark text-white font-semibold rounded-lg hover:bg-warm-900 transition-colors text-sm">
+                    Оценки ({lot.evaluationsCount})
+                  </Link>
+                  <button onClick={handleDeleteMyEvaluation}
+                    className="px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 font-medium rounded-lg transition-colors text-sm">
+                    Удалить мою оценку
+                  </button>
+                </>
               )}
               {userIsAdmin && (
                 <>

@@ -29,8 +29,6 @@ const shortLabels: Record<string, string> = {
   sweetness: 'Слад',
   cleanCup: 'Чист',
   overall: 'Общ',
-  aftertasteDuration: 'П.длит',
-  aftertastePleasantness: 'П.приятн',
 }
 
 export default function SpiderGraph({ evaluations, maxValue = 10, compact = false }: SpiderGraphProps) {

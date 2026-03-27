@@ -23,7 +23,8 @@ export default function EvaluatePage() {
   const lotIndex = parseInt(searchParams.get('lotIndex') || '0')
   const totalLots = parseInt(searchParams.get('totalLots') || '0')
 
-  const [scores, setScores] = useState<Scores>(Object.fromEntries(spiderKeys.map((k) => [k, 5])))
+  const allInputKeys = [...stage1Keys, ...stage2Keys, ...stage3Keys] as const
+  const [scores, setScores] = useState<Scores>(Object.fromEntries(allInputKeys.map((k) => [k, 5])))
   const [aromaGroundComment, setAromaGroundComment] = useState('')
   const [aromaBrewedComment, setAromaBrewedComment] = useState('')
   const [descriptors, setDescriptors] = useState('')
@@ -56,7 +57,7 @@ export default function EvaluatePage() {
         if (data && data.id) {
           setIsEdit(true)
           const loaded: Scores = {}
-          for (const key of spiderKeys) { loaded[key] = data[key] ?? 5 }
+          for (const key of allInputKeys) { loaded[key] = data[key] ?? 5 }
           setScores(loaded)
           setAromaGroundComment(data.aromaGroundComment || '')
           setAromaBrewedComment(data.aromaBrewedComment || '')
@@ -202,13 +203,10 @@ export default function EvaluatePage() {
       <main className="max-w-2xl mx-auto px-4 py-6">
         <button onClick={() => router.back()} className="text-sm text-warm-500 hover:text-dark mb-4 transition-colors">← Назад</button>
 
-        {/* Lot photo + name */}
-        {(lotPhoto || lotName) && (
-          <div className="flex items-center gap-4 mb-4 bg-white rounded-xl border border-warm-200 p-3 overflow-hidden">
-            {lotPhoto && (
-              <img src={lotPhoto} alt={lotName} className="w-16 h-16 rounded-lg object-cover shrink-0" />
-            )}
-            <h2 className="font-display text-lg font-bold truncate">{lotName}</h2>
+        {/* Lot photo */}
+        {lotPhoto && (
+          <div className="mb-4 rounded-xl overflow-hidden border border-warm-200" style={{ maxHeight: '16.6dvh' }}>
+            <img src={lotPhoto} alt={lotName} className="w-full h-full object-cover" />
           </div>
         )}
 
@@ -219,12 +217,17 @@ export default function EvaluatePage() {
               className={`text-sm font-medium ${canGoPrev ? 'text-primary hover:text-primary-dark' : 'text-warm-300'}`}>
               ← Пред. лот
             </button>
-            <span className="text-sm font-semibold text-dark">{currentLotName || 'Лот'}</span>
+            <span className="text-sm font-semibold text-dark">{currentLotName || lotName || 'Лот'}</span>
             <button onClick={() => navigateToLot(1)} disabled={!canGoNext}
               className={`text-sm font-medium ${canGoNext ? 'text-primary hover:text-primary-dark' : 'text-warm-300'}`}>
               След. лот →
             </button>
           </div>
+        )}
+
+        {/* Lot name (only when NOT inside a cupping, since cupping has the switcher) */}
+        {!cuppingId && lotName && (
+          <h2 className="font-display text-lg font-bold mb-4">{lotName}</h2>
         )}
 
         {/* Stage tabs */}

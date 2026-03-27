@@ -64,15 +64,18 @@ export const scaleDescriptions: Record<string, { low: string; high: string }> = 
   overall: { low: 'Не понравился', high: 'Великолепный кофе' },
 }
 
-// Все критерии для spider-graph (послевкусие = среднее двух шкал, показываем как "Послевкусие")
-export const spiderKeys = [...stage1Keys, ...stage2Keys, ...stage3Keys] as const
+// Все критерии для spider-graph (послевкусие = среднее двух шкал, показываем как одно значение "Послевкусие")
+export const spiderKeys = ['aromaGround', 'aromaBrewed', 'flavor', 'aftertaste', 'acidity', 'body', 'sweetness', 'cleanCup', 'overall'] as const
 export const spiderLabels: Record<string, string> = {
-  ...stage1Labels,
-  ...stage2Labels,
-  ...stage3Labels,
-  // Короткие для графика
-  aftertasteDuration: 'Послвк. длит.',
-  aftertastePleasantness: 'Послвк. приятн.',
+  aromaGround: 'Аромат смолотого зерна',
+  aromaBrewed: 'Аромат заваренного зерна',
+  flavor: 'Интенсивность вкуса',
+  aftertaste: 'Послевкусие',
+  acidity: 'Кислотность',
+  body: 'Тело',
+  sweetness: 'Сладость',
+  cleanCup: 'Чистота чашки',
+  overall: 'Общее впечатление',
 }
 
 export const criteriaLabels = spiderLabels

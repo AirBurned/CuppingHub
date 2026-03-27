@@ -27,12 +27,16 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const { id } = await params
   const user = await getUser()
   if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
-  if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+
+  const body = await request.json().catch(() => ({}))
+  const targetUserId = body.userId || user.userId
+
+  // Admins can delete anyone's evaluation; regular users can only delete their own
+  if (targetUserId !== user.userId && user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
     return NextResponse.json({ error: 'Нет доступа' }, { status: 403 })
   }
-  const { userId } = await request.json()
-  if (!userId) return NextResponse.json({ error: 'userId обязателен' }, { status: 400 })
-  await prisma.evaluation.deleteMany({ where: { lotId: id, userId } })
+
+  await prisma.evaluation.deleteMany({ where: { lotId: id, userId: targetUserId } })
   return NextResponse.json({ ok: true })
 }
 
