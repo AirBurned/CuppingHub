@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <defs>
+    <clipPath id="clip-ch">
+      <rect width="400" height="300" rx="16" ry="16"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#clip-ch)">
+    <!-- Background -->
+    <rect width="400" height="300" rx="16" ry="16" fill="#1a1a1a"/>
+    <!-- Accent bar -->
+    <rect width="400" height="8" fill="#F59E0B"/>
+    <!-- Coffee bean icon -->
+    <g transform="translate(200, 85)">
+      <ellipse cx="-8" cy="0" rx="16" ry="26" fill="none" stroke="#F59E0B" stroke-width="2.5"/>
+      <ellipse cx="8" cy="0" rx="16" ry="26" fill="none" stroke="#F59E0B" stroke-width="2.5"/>
+      <line x1="0" y1="-22" x2="0" y2="22" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <!-- Lot name -->
+    <text x="200" y="148" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Колумбия Уила</text>
+    <!-- Roaster -->
+    <text x="200" y="178" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" fill="#9a9a9a">Rockets Coffee</text>
+    <!-- Processing badge -->
+    <rect x="162" y="200" width="76" height="30" rx="15" ry="15" fill="#F59E0B" opacity="0.15"/>
+    <rect x="162" y="200" width="76" height="30" rx="15" ry="15" fill="none" stroke="#F59E0B" stroke-width="1.5" opacity="0.6"/>
+    <text x="200" y="220" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#F59E0B">Мытая</text>
+  </g>
+</svg>

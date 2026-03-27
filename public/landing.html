@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupping Hub — платформа командного каппинга для бариста</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --espresso: #0a0a0a;
+            --dark-roast: #1a1a1a;
+            --medium-roast: #4a4a4a;
+            --crema: #aba390;
+            --latte: #d4cfc6;
+            --milk-foam: #f5f4f1;
+            --paper: #fafaf8;
+            --cherry: #f0c403;
+            --cherry-dark: #d4ad03;
+            --amber: #f0c403;
+            --sage: #aba390;
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--paper);
+            color: var(--dark-roast);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== GRAIN OVERLAY ===== */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(250, 247, 242, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(74, 44, 26, 0.08);
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--espresso);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-logo span {
+            color: var(--espresso);
+            background: linear-gradient(180deg, transparent 55%, rgba(240, 196, 3, 0.35) 55%);
+        }
+
+        .nav-cta {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0.7rem 1.6rem;
+            background: var(--espresso);
+            color: var(--milk-foam);
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--cherry);
+            transform: translateY(-1px);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -20%; right: -10%;
+            width: 60vw; height: 60vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(240, 196, 3, 0.08) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -10%; left: -5%;
+            width: 40vw; height: 40vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(171, 163, 144, 0.1) 0%, transparent 70%);
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.02); }
+            66% { transform: translate(-20px, 15px) scale(0.98); }
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--medium-roast);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.2s;
+        }
+
+        .hero-tag::before {
+            content: '';
+            width: 32px;
+            height: 1px;
+            background: var(--crema);
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            color: var(--espresso);
+            max-width: 900px;
+            margin-bottom: 1.8rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.4s;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--espresso);
+            background: linear-gradient(180deg, transparent 60%, rgba(240, 196, 3, 0.3) 60%);
+            padding: 0 0.1em;
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: var(--medium-roast);
+            max-width: 580px;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.6s;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.8s;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 1rem 2.2rem;
+            background: var(--cherry);
+            color: var(--espresso);
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(240, 196, 3, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--cherry-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(240, 196, 3, 0.4);
+        }
+
+        .btn-primary svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-primary:hover svg {
+            transform: translateX(3px);
+        }
+
+        .btn-secondary {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--medium-roast);
+            text-decoration: none;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--crema);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            color: var(--espresso);
+            border-color: var(--espresso);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== METRICS BAR ===== */
+        .metrics {
+            padding: 0 2rem;
+            margin-top: -2rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        .metrics-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--crema);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 40px rgba(26, 14, 10, 0.06);
+        }
+
+        .metric {
+            background: #fff;
+            padding: 2rem 2.5rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--espresso);
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+
+        .metric-label {
+            font-size: 0.82rem;
+            color: var(--medium-roast);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+
+        /* ===== SECTIONS GENERAL ===== */
+        section {
+            padding: 6rem 2rem;
+        }
+
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--medium-roast);
+            margin-bottom: 1rem;
+        }
+
+        .section-tag::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cherry);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: var(--espresso);
+            margin-bottom: 1.2rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--medium-roast);
+            font-weight: 300;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== AHA MOMENT ===== */
+        .aha {
+            background: var(--espresso);
+            color: var(--milk-foam);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aha::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(240, 196, 3, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 30%, rgba(171, 163, 144, 0.06) 0%, transparent 50%);
+        }
+
+        .aha .section-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .aha .section-tag {
+            color: var(--crema);
+        }
+
+        .aha .section-tag::before {
+            background: var(--crema);
+        }
+
+        .aha .section-title {
+            color: var(--milk-foam);
+        }
+
+        .aha .section-subtitle {
+            color: var(--latte);
+        }
+
+        .aha-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .aha-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(200, 168, 130, 0.12);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .aha-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(200, 168, 130, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .aha-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(240, 196, 3, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .aha-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--milk-foam);
+        }
+
+        .aha-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--latte);
+            font-weight: 300;
+        }
+
+        /* ===== FEATURES ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid rgba(200, 168, 130, 0.15);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--cherry), var(--crema));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(26, 14, 10, 0.08);
+        }
+
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+
+        .feature-number {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 700;
+            color: rgba(200, 168, 130, 0.2);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--espresso);
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--medium-roast);
+            font-weight: 300;
+        }
+
+        /* ===== RECOGNIZE ===== */
+        .recognize {
+            background: linear-gradient(180deg, var(--milk-foam) 0%, var(--paper) 100%);
+        }
+
+        .recognize-title {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .recognize-title .section-tag {
+            justify-content: center;
+        }
+
+        .recognize-title .section-title {
+            margin-bottom: 0.8rem;
+        }
+
+        .recognize-title .section-subtitle {
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .recognize-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .recognize-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(200, 168, 130, 0.12);
+            font-size: 0.95rem;
+            color: var(--dark-roast);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .recognize-item:hover {
+            border-color: var(--cherry);
+            box-shadow: 0 4px 16px rgba(240, 196, 3, 0.1);
+        }
+
+        .recognize-item::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .recognize-item:nth-child(1)::before { background-image: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=200&fit=crop'); }
+        .recognize-item:nth-child(2)::before { background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=200&fit=crop'); }
+        .recognize-item:nth-child(3)::before { background-image: url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&h=200&fit=crop'); }
+        .recognize-item:nth-child(4)::before { background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefda?w=400&h=200&fit=crop'); }
+        .recognize-item:nth-child(5)::before { background-image: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=200&fit=crop'); }
+        .recognize-item:nth-child(6)::before { background-image: url('https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&h=200&fit=crop'); }
+
+        /* ===== HOW IT WORKS ===== */
+        .how-it-works {
+            background: #fff;
+        }
+
+        .how-blocks {
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
+        }
+
+        .how-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .how-block:nth-child(even) {
+            direction: rtl;
+        }
+
+        .how-block:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .how-block-number {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 700;
+            color: rgba(200, 168, 130, 0.12);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .how-block h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--espresso);
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .how-block-desc {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--medium-roast);
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+        }
+
+        .how-steps {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .how-steps li {
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--dark-roast);
+        }
+
+        .how-steps li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cherry);
+            flex-shrink: 0;
+            margin-top: 0.55rem;
+        }
+
+        .how-visual {
+            background: var(--milk-foam);
+            border-radius: 16px;
+            padding: 2.5rem;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(200, 168, 130, 0.12);
+        }
+
+        .mock-ui {
+            width: 100%;
+            font-size: 0.82rem;
+        }
+
+        /* Mock: Cupping form */
+        .mock-form {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .mock-form-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            color: var(--espresso);
+        }
+
+        .mock-criteria {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .mock-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+        }
+
+        .mock-row-label {
+            color: var(--medium-roast);
+            font-weight: 400;
+        }
+
+        .mock-row-bar {
+            width: 120px;
+            height: 6px;
+            background: var(--milk-foam);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mock-row-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--cherry), var(--crema));
+        }
+
+        .mock-row-value {
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--espresso);
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* Mock: Comparison */
+        .mock-comparison {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .mock-comparison-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            color: var(--espresso);
+        }
+
+        .mock-avatars {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .mock-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .mock-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .mock-bar-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .mock-bar-label {
+            font-size: 0.72rem;
+            color: var(--medium-roast);
+        }
+
+        .mock-bar-row {
+            display: flex;
+            gap: 0.2rem;
+            height: 8px;
+        }
+
+        .mock-bar-segment {
+            border-radius: 4px;
+            height: 100%;
+        }
+
+        /* Mock: Lot card */
+        .mock-lot {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .mock-lot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .mock-lot-name {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--espresso);
+        }
+
+        .mock-lot-region {
+            font-size: 0.8rem;
+            color: var(--medium-roast);
+            margin-top: 0.2rem;
+        }
+
+        .mock-lot-score {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--espresso);
+            background: rgba(240, 196, 3, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .mock-lot-tags {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .mock-tag {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 100px;
+            background: rgba(200, 168, 130, 0.12);
+            color: var(--medium-roast);
+        }
+
+        .mock-recipe {
+            background: var(--milk-foam);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            font-size: 0.78rem;
+            color: var(--dark-roast);
+        }
+
+        .mock-recipe-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .mock-recipe-badge {
+            font-size: 0.6rem;
+            padding: 0.1rem 0.4rem;
+            background: var(--cherry);
+            color: var(--espresso);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .mock-recipe-params {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.2rem;
+            color: var(--medium-roast);
+        }
+
+        /* ===== OUTCOMES ===== */
+        .outcomes {
+            background: var(--espresso);
+            color: var(--milk-foam);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .outcomes::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -20%;
+            width: 80vw; height: 80vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(200, 168, 130, 0.04) 0%, transparent 60%);
+        }
+
+        .outcomes .section-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .outcomes .section-tag {
+            color: var(--crema);
+        }
+
+        .outcomes .section-tag::before {
+            background: var(--crema);
+        }
+
+        .outcomes .section-title {
+            color: var(--milk-foam);
+        }
+
+        .outcomes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .outcome-card {
+            border: 1px solid rgba(200, 168, 130, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+        }
+
+        .outcome-card:hover {
+            border-color: rgba(200, 168, 130, 0.25);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .outcome-icon {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .outcome-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: var(--milk-foam);
+        }
+
+        .outcome-card p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--latte);
+            font-weight: 300;
+        }
+
+        /* ===== DOUBTS ===== */
+        .doubts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 800px;
+        }
+
+        .doubt-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem 2.5rem;
+            border: 1px solid rgba(200, 168, 130, 0.12);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .doubt-card:hover {
+            box-shadow: 0 4px 20px rgba(26, 14, 10, 0.06);
+        }
+
+        .doubt-question {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--espresso);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+
+        .doubt-question::before {
+            display: none;
+        }
+
+        .doubt-answer {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--medium-roast);
+            font-weight: 300;
+            padding-left: 2.3rem;
+        }
+
+        /* ===== COMPETITORS ===== */
+        .competitors {
+            background: var(--milk-foam);
+        }
+
+        .competitors-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .competitor-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(200, 168, 130, 0.12);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .competitor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 14, 10, 0.06);
+        }
+
+        .competitor-old {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--crema);
+            margin-bottom: 0.8rem;
+        }
+
+        .competitor-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--espresso);
+            margin-bottom: 0.6rem;
+        }
+
+        .competitor-problem {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--medium-roast);
+            font-weight: 300;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(200, 168, 130, 0.12);
+        }
+
+        .competitor-solution {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--sage);
+            font-weight: 500;
+        }
+
+        .competitor-solution::before {
+            content: 'Cupping Hub: ';
+            font-weight: 600;
+        }
+
+        /* ===== FINAL CTA ===== */
+        .final-cta {
+            background: var(--espresso);
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse at 50% 100%, rgba(240, 196, 3, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 0%, rgba(171, 163, 144, 0.05) 0%, transparent 50%);
+        }
+
+        .final-cta .section-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .final-cta h2 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 600;
+            color: var(--milk-foam);
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .final-cta p {
+            font-size: 1.1rem;
+            color: var(--latte);
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--espresso);
+            border-top: 1px solid rgba(200, 168, 130, 0.08);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 0.8rem;
+            color: rgba(200, 168, 130, 0.4);
+        }
+
+        /* ===== SCROLL ANIMATIONS ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .metrics-inner { grid-template-columns: 1fr; }
+            .aha-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .recognize-grid { grid-template-columns: 1fr; }
+            .how-block { grid-template-columns: 1fr; gap: 2rem; }
+            .how-block:nth-child(even) { direction: ltr; }
+            .outcomes-grid { grid-template-columns: 1fr; }
+            .competitors-grid { grid-template-columns: 1fr; }
+            .hero { padding: 6rem 1.5rem 3rem; }
+            section { padding: 4rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+    <a href="#" class="nav-logo">Cupping<span>Hub</span></a>
+    <a href="/login" class="nav-cta">Войти</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-tag">Для команд бариста</div>
+        <h1>Каппинги, оценки и рецепты — <em>в одном месте</em> для всей команды</h1>
+        <p class="hero-sub">Cupping Hub заменяет блокноты, Google Sheets и переписки в Telegram. Проводите слепые каппинги, сравнивайте восприятие команды и храните рецепты к каждому лоту.</p>
+        <div class="hero-actions">
+            <a href="/login" class="btn-primary">
+                Попробовать бесплатно
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#features" class="btn-secondary">Что внутри</a>
+        </div>
+    </div>
+</section>
+
+<!-- METRICS -->
+<div class="metrics">
+    <div class="metrics-inner reveal">
+        <div class="metric">
+            <div class="metric-value">2 мин</div>
+            <div class="metric-label">заполнение каппинговой формы</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">8 критериев</div>
+            <div class="metric-label">упрощённая оценка в стиле Beansy</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">1–2 клика</div>
+            <div class="metric-label">до рецепта на смене</div>
+        </div>
+    </div>
+</div>
+
+<!-- AHA MOMENT -->
+<section class="aha">
+    <div class="section-inner">
+        <div class="section-tag reveal">Aha-момент</div>
+        <h2 class="section-title reveal">Почувствуйте разницу<br>с первого каппинга</h2>
+        <div class="aha-grid">
+            <div class="aha-card reveal reveal-delay-1">
+                <div class="aha-card-icon">&#9737;</div>
+                <h3>Слепой каппинг с командой</h3>
+                <p>Каждый оценивает лот независимо, без влияния чужого мнения. После отправки оценки вы мгновенно видите, как ваше восприятие соотносится с командой. Калибровка вкуса перестаёт быть абстрактным понятием.</p>
+            </div>
+            <div class="aha-card reveal reveal-delay-2">
+                <div class="aha-card-icon">&#9749;</div>
+                <h3>Карточка нового лота</h3>
+                <p>Регион, обработка, обжарщик, дескрипторы и готовый рецепт. Больше не нужно спрашивать шефа или искать в переписке — вся информация уже здесь, в два клика с телефона.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+    <div class="section-inner">
+        <div class="section-tag reveal">Возможности</div>
+        <h2 class="section-title reveal">Что вы получите<br>с Cupping Hub</h2>
+        <p class="section-subtitle reveal">Всё, что нужно для работы с зерном и командой — в одном приложении.</p>
+        <div class="features-grid">
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-number">01</div>
+                <h3>Единая база лотов</h3>
+                <p>Карточка каждого зерна с регионом, обработкой, обжарщиком и дескрипторами. Информация не теряется при смене лота — она остаётся в архиве и доступна всей команде.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-number">02</div>
+                <h3>Слепые каппинги</h3>
+                <p>Упрощённая форма: 8 критериев, шкала 6–10, итоговый балл автоматически. Оценки коллег скрыты до отправки вашей — честная калибровка без подглядывания.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-3">
+                <div class="feature-number">03</div>
+                <h3>Сравнение команды</h3>
+                <p>Оценки каждого бариста по каждому критерию на одном экране. Кто недооценивает кислотность? У кого расходится восприятие тела? Это видно сразу.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-4">
+                <div class="feature-number">04</div>
+                <h3>Рецепты к лотам</h3>
+                <p>Официальный рецепт от шефа для каждого метода приготовления. Плюс неофициальные варианты от команды. Новый бариста находит нужный рецепт за минуту.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RECOGNIZE -->
+<section class="recognize">
+    <div class="section-inner">
+        <div class="recognize-title">
+            <div class="section-tag reveal">Узнаёте себя?</div>
+            <h2 class="section-title reveal">Вы хотите, чтобы команда стабильно готовила на высоком уровне</h2>
+            <p class="section-subtitle reveal">Независимо от того, кто сегодня на смене</p>
+        </div>
+        <div class="recognize-grid">
+            <div class="recognize-item reveal reveal-delay-1">Новый лот — а половина команды не знает, как его готовить</div>
+            <div class="recognize-item reveal reveal-delay-2">Результаты каппинга — в блокноте, который остался у шефа дома</div>
+            <div class="recognize-item reveal reveal-delay-3">Новый бариста на смене готовит наугад — рецепт в чьём-то Telegram</div>
+            <div class="recognize-item reveal reveal-delay-1">Провели каппинг, но через неделю уже не вспомнить оценки</div>
+            <div class="recognize-item reveal reveal-delay-2">Команда расходится во вкусе — но нет данных, чтобы это увидеть</div>
+            <div class="recognize-item reveal reveal-delay-3">Каждый раз объясняете одно и то же новым сотрудникам</div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works">
+    <div class="section-inner">
+        <div class="section-tag reveal">Как это работает</div>
+        <h2 class="section-title reveal">Три задачи — одно решение</h2>
+        <p class="section-subtitle reveal">Cupping Hub закрывает ключевые потребности команды бариста.</p>
+        <div class="how-blocks">
+
+            <!-- Block 1 -->
+            <div class="how-block reveal">
+                <div>
+                    <div class="how-block-number">01</div>
+                    <h3>Новый лот? Вся информация — за 2 клика</h3>
+                    <p class="how-block-desc">Шеф добавляет лот и прикрепляет рецепт. Любой бариста открывает карточку — и точно знает, как готовить.</p>
+                    <ul class="how-steps">
+                        <li>Шеф-бариста создаёт карточку лота: регион, обработка, обжарщик, дескрипторы</li>
+                        <li>Прикрепляет рецепт для каждого метода приготовления</li>
+                        <li>Любой бариста открывает карточку с телефона — всё на месте</li>
+                        <li>Рецепт обновляется по мере настройки зерна</li>
+                    </ul>
+                </div>
+                <div class="how-visual">
+                    <div class="mock-ui">
+                        <div class="mock-lot">
+                            <div class="mock-lot-header">
+                                <div>
+                                    <div class="mock-lot-name">Эфиопия Yirgacheffe</div>
+                                    <div class="mock-lot-region">Gedeo Zone &middot; Rockets Coffee</div>
+                                </div>
+                                <div class="mock-lot-score">8.4</div>
+                            </div>
+                            <div class="mock-lot-tags">
+                                <span class="mock-tag">мытая</span>
+                                <span class="mock-tag">светлая</span>
+                                <span class="mock-tag">бергамот</span>
+                                <span class="mock-tag">персик</span>
+                                <span class="mock-tag">жасмин</span>
+                            </div>
+                            <div class="mock-recipe">
+                                <div class="mock-recipe-title">
+                                    Эспрессо <span class="mock-recipe-badge">Официальный</span>
+                                </div>
+                                <div class="mock-recipe-params">
+                                    <span>Доза: 18 г</span>
+                                    <span>Выход: 36 мл</span>
+                                    <span>Помол: 2.5</span>
+                                    <span>Время: 27 сек</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block 2 -->
+            <div class="how-block reveal">
+                <div>
+                    <div class="how-block-number">02</div>
+                    <h3>Командный каппинг? Честные оценки</h3>
+                    <p class="how-block-desc">Слепой режим гарантирует независимость оценок. После отправки — наглядное сравнение всей команды.</p>
+                    <ul class="how-steps">
+                        <li>Каждый бариста оценивает лот по 8 критериям — занимает 2 минуты</li>
+                        <li>Оценки коллег скрыты, пока вы не отправите свою</li>
+                        <li>Экран сравнения: таблица с оценками всей команды</li>
+                        <li>Видна средняя и отклонения — кто оценил выше, кто ниже</li>
+                    </ul>
+                </div>
+                <div class="how-visual">
+                    <div class="mock-ui">
+                        <div class="mock-comparison">
+                            <div class="mock-comparison-title">Сравнение оценок команды</div>
+                            <div class="mock-avatars">
+                                <div class="mock-avatar" style="background: #0a0a0a;">АК</div>
+                                <div class="mock-avatar" style="background: #f0c403; color: #0a0a0a;">МВ</div>
+                                <div class="mock-avatar" style="background: #aba390;">ЛС</div>
+                                <div class="mock-avatar" style="background: #4a4a4a;">ДР</div>
+                            </div>
+                            <div class="mock-bars">
+                                <div class="mock-bar-group">
+                                    <div class="mock-bar-label">Аромат</div>
+                                    <div class="mock-bar-row">
+                                        <div class="mock-bar-segment" style="width:82%; background: #0a0a0a; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:78%; background: #f0c403; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:85%; background: #aba390; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:80%; background: #4a4a4a; opacity: 0.7;"></div>
+                                    </div>
+                                </div>
+                                <div class="mock-bar-group">
+                                    <div class="mock-bar-label">Кислотность</div>
+                                    <div class="mock-bar-row">
+                                        <div class="mock-bar-segment" style="width:90%; background: #0a0a0a; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:65%; background: #f0c403; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:75%; background: #aba390; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:70%; background: #4a4a4a; opacity: 0.7;"></div>
+                                    </div>
+                                </div>
+                                <div class="mock-bar-group">
+                                    <div class="mock-bar-label">Тело</div>
+                                    <div class="mock-bar-row">
+                                        <div class="mock-bar-segment" style="width:70%; background: #0a0a0a; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:75%; background: #f0c403; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:68%; background: #aba390; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:72%; background: #4a4a4a; opacity: 0.7;"></div>
+                                    </div>
+                                </div>
+                                <div class="mock-bar-group">
+                                    <div class="mock-bar-label">Сладость</div>
+                                    <div class="mock-bar-row">
+                                        <div class="mock-bar-segment" style="width:78%; background: #0a0a0a; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:82%; background: #f0c403; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:80%; background: #aba390; opacity: 0.7;"></div>
+                                        <div class="mock-bar-segment" style="width:85%; background: #4a4a4a; opacity: 0.7;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block 3 -->
+            <div class="how-block reveal">
+                <div>
+                    <div class="how-block-number">03</div>
+                    <h3>Новый бариста? Он найдёт всё сам</h3>
+                    <p class="how-block-desc">Доступ к рецептам, описаниям зерна и комментариям команды. Не нужно отвлекать шефа вопросами.</p>
+                    <ul class="how-steps">
+                        <li>Актуальные рецепты для каждого активного лота</li>
+                        <li>Описания зерна с дескрипторами — понятно, чего ожидать в чашке</li>
+                        <li>Комментарии коллег — советы и наблюдения</li>
+                        <li>Новый сотрудник выходит на уровень за дни, а не за недели</li>
+                    </ul>
+                </div>
+                <div class="how-visual">
+                    <div class="mock-ui">
+                        <div class="mock-form">
+                            <div class="mock-form-title">Каппинг: Колумбия Huila</div>
+                            <div class="mock-criteria">
+                                <div class="mock-row">
+                                    <span class="mock-row-label">Аромат</span>
+                                    <div class="mock-row-bar"><div class="mock-row-fill" style="width: 82%"></div></div>
+                                    <span class="mock-row-value">8.2</span>
+                                </div>
+                                <div class="mock-row">
+                                    <span class="mock-row-label">Вкус</span>
+                                    <div class="mock-row-bar"><div class="mock-row-fill" style="width: 78%"></div></div>
+                                    <span class="mock-row-value">7.8</span>
+                                </div>
+                                <div class="mock-row">
+                                    <span class="mock-row-label">Послевкусие</span>
+                                    <div class="mock-row-bar"><div class="mock-row-fill" style="width: 75%"></div></div>
+                                    <span class="mock-row-value">7.5</span>
+                                </div>
+                                <div class="mock-row">
+                                    <span class="mock-row-label">Кислотность</span>
+                                    <div class="mock-row-bar"><div class="mock-row-fill" style="width: 85%"></div></div>
+                                    <span class="mock-row-value">8.5</span>
+                                </div>
+                                <div class="mock-row">
+                                    <span class="mock-row-label">Тело</span>
+                                    <div class="mock-row-bar"><div class="mock-row-fill" style="width: 72%"></div></div>
+                                    <span class="mock-row-value">7.2</span>
+                                </div>
+                                <div class="mock-row">
+                                    <span class="mock-row-label">Сладость</span>
+                                    <div class="mock-row-bar"><div class="mock-row-fill" style="width: 80%"></div></div>
+                                    <span class="mock-row-value">8.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- OUTCOMES -->
+<section class="outcomes">
+    <div class="section-inner">
+        <div class="section-tag reveal">Результат</div>
+        <h2 class="section-title reveal" style="margin-bottom: 3rem;">К чему вы придёте</h2>
+        <div class="outcomes-grid">
+            <div class="outcome-card reveal reveal-delay-1">
+                <div class="outcome-icon">&#9878;</div>
+                <h3>Калибровка как система</h3>
+                <p>Команда будет чувствовать кофе одинаково. Калибровка вкуса станет постоянным процессом, а не случайностью.</p>
+            </div>
+            <div class="outcome-card reveal reveal-delay-2">
+                <div class="outcome-icon">&#9889;</div>
+                <h3>Быстрая адаптация</h3>
+                <p>Новые сотрудники выходят на уровень за дни, а не за недели. Вся база знаний у них под рукой с первой смены.</p>
+            </div>
+            <div class="outcome-card reveal reveal-delay-3">
+                <div class="outcome-icon">&#9733;</div>
+                <h3>Стабильное качество</h3>
+                <p>Уверенность в каждой чашке — независимо от того, кто на смене. Гости возвращаются, кофейня растёт.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DOUBTS -->
+<section class="doubts">
+    <div class="section-inner">
+        <div class="section-tag reveal">Частые вопросы</div>
+        <h2 class="section-title reveal">А может, нам и так нормально?</h2>
+        <p class="section-subtitle reveal">Мы слышали это сотню раз. Вот что отвечаем.</p>
+        <div class="doubts-list">
+            <div class="doubt-card reveal reveal-delay-1">
+                <div class="doubt-question">У нас маленькая команда, нам хватит и блокнота</div>
+                <p class="doubt-answer">Блокнот работает ровно до момента, пока шеф не уйдёт в отпуск или не придёт новый человек. Cupping Hub — это та же простота, только данные всегда под рукой, с телефона, с любого устройства.</p>
+            </div>
+            <div class="doubt-card reveal reveal-delay-2">
+                <div class="doubt-question">Ребята не захотят заполнять ещё одну форму</div>
+                <p class="doubt-answer">Оценка занимает пару минут — двигаешь слайдеры и пишешь, чем пахнет. Зато потом видишь, как твои ощущения совпадают (или не совпадают) с командой. Это затягивает.</p>
+            </div>
+            <div class="doubt-card reveal reveal-delay-3">
+                <div class="doubt-question">Мы и так капим — зачем ещё платформа?</div>
+                <p class="doubt-answer">Капите — отлично. Но если оценки нигде не записаны, через неделю никто не вспомнит деталей. Тут всё сохраняется: оценки, рецепты, комментарии. Через месяц у вас — настоящая база знаний о зерне.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- COMPETITORS -->
+<section class="competitors">
+    <div class="section-inner">
+        <div class="section-tag reveal">Увольняем старые способы</div>
+        <h2 class="section-title reveal">Почему не <em>то, что есть</em></h2>
+        <p class="section-subtitle reveal">Сравниваем с тем, что вы используете сейчас.</p>
+        <div class="competitors-grid">
+            <div class="competitor-card reveal reveal-delay-1">
+                <div class="competitor-old">Google Sheets</div>
+                <h3>Нет каппинговой формы</h3>
+                <p class="competitor-problem">Нет слепого режима, нет сравнения оценок. Данные разбросаны по вкладкам, формулы ломаются, интерфейс не заточен под кофе.</p>
+                <p class="competitor-solution">специализированный инструмент с формой, слепым режимом и наглядным сравнением команды.</p>
+            </div>
+            <div class="competitor-card reveal reveal-delay-2">
+                <div class="competitor-old">Блокнот и бумага</div>
+                <h3>Данные теряются</h3>
+                <p class="competitor-problem">Невозможно сравнить оценки, нет доступа с телефона на смене. Уехал шеф — уехал и блокнот.</p>
+                <p class="competitor-solution">оцифровывает всё и делает данные доступными команде в реальном времени с любого устройства.</p>
+            </div>
+            <div class="competitor-card reveal reveal-delay-3">
+                <div class="competitor-old">Telegram-чаты</div>
+                <h3>Рецепт утонул в потоке</h3>
+                <p class="competitor-problem">Через неделю не найти. Рецепт смешан с мемами, отпускными и обсуждением графика смен.</p>
+                <p class="competitor-solution">рецепт привязан к лоту — он всегда на месте, актуальный и доступный в 1 клик.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta" id="cta">
+    <div class="section-inner">
+        <h2 class="reveal">Начните с первого каппинга</h2>
+        <p class="reveal">Подключите команду и проведите первый слепой каппинг уже сегодня.</p>
+        <a href="/login" class="btn-primary reveal" style="display: inline-flex;">
+            Попробовать бесплатно
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>&copy; 2026 Cupping Hub. Платформа командного каппинга для бариста.</p>
+</footer>
+
+<script>
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
