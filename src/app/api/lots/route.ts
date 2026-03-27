@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       ? lot.evaluations.reduce((sum, e) => sum + (e.totalScore ?? 0), 0) / lot.evaluations.length : null
     return {
       id: lot.id, name: lot.name, country: lot.country, roaster: lot.roaster,
-      processing: lot.processing, roastLevel: lot.roastLevel, descriptors: lot.descriptors,
+      processing: lot.processing, customProcessing: lot.customProcessing, roastLevel: lot.roastLevel, descriptors: lot.descriptors,
       photoUrl: lot.photoUrl, status: lot.status, avgScore: avgScore ? Math.round(avgScore * 100) / 100 : null,
       evaluationsCount: lot._count.evaluations, recipesCount: lot._count.recipes, createdAt: lot.createdAt,
     }
@@ -41,8 +41,10 @@ export async function POST(request: Request) {
     data: {
       name: body.name, country: body.country, roaster: body.roaster,
       farm: body.farm || null, variety: body.variety || null,
-      processing: body.processing, roastLevel: body.roastLevel,
+      processing: body.processing, customProcessing: body.customProcessing || null,
+      roastLevel: body.roastLevel,
       roastDate: body.roastDate ? new Date(body.roastDate) : null,
+      altitude: body.altitude || null,
       descriptors: body.descriptors || null, photoUrl: body.photoUrl || null,
       status: body.status || 'ACTIVE',
     },

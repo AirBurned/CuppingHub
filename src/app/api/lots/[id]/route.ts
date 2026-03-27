@@ -44,7 +44,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   if (body.farm !== undefined) data.farm = body.farm || null
   if (body.variety !== undefined) data.variety = body.variety || null
   if (body.processing !== undefined) data.processing = body.processing
+  if (body.customProcessing !== undefined) data.customProcessing = body.customProcessing || null
   if (body.roastLevel !== undefined) data.roastLevel = body.roastLevel
+  if (body.altitude !== undefined) data.altitude = body.altitude || null
   if (body.roastDate !== undefined) data.roastDate = body.roastDate ? new Date(body.roastDate) : null
   if (body.descriptors !== undefined) data.descriptors = body.descriptors || null
   if (body.status !== undefined) data.status = body.status

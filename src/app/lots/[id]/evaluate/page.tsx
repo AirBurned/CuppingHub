@@ -203,32 +203,36 @@ export default function EvaluatePage() {
       <main className="max-w-2xl mx-auto px-4 py-6">
         <button onClick={() => router.back()} className="text-sm text-warm-500 hover:text-dark mb-4 transition-colors">← Назад</button>
 
-        {/* Lot photo — same crop as lot detail card */}
-        {lotPhoto && (
-          <div className="mb-4 rounded-xl overflow-hidden border border-warm-200 h-48 sm:h-64">
-            <img src={lotPhoto} alt={lotName} className="w-full h-full object-cover" />
-          </div>
-        )}
+        {/* Sticky lot header: photo + name/navigation */}
+        <div className="sticky top-0 z-10 -mx-4 px-4 pb-3 bg-light">
+          {lotPhoto && (
+            <div className="mb-2 rounded-xl overflow-hidden border border-warm-200 h-48 sm:h-64">
+              <img src={lotPhoto} alt={lotName} className="w-full h-full object-cover" />
+            </div>
+          )}
 
-        {/* Lot navigation in cupping */}
-        {cuppingId && cuppingLots.length > 0 && (
-          <div className="flex items-center justify-between mb-4 bg-white rounded-lg border border-warm-200 px-4 py-2">
-            <button onClick={() => navigateToLot(-1)} disabled={!canGoPrev}
-              className={`text-sm font-medium ${canGoPrev ? 'text-primary hover:text-primary-dark' : 'text-warm-300'}`}>
-              ← Пред. лот
-            </button>
-            <span className="text-sm font-semibold text-dark">{currentLotName || lotName || 'Лот'}</span>
-            <button onClick={() => navigateToLot(1)} disabled={!canGoNext}
-              className={`text-sm font-medium ${canGoNext ? 'text-primary hover:text-primary-dark' : 'text-warm-300'}`}>
-              След. лот →
-            </button>
-          </div>
-        )}
+          {/* Lot navigation in cupping */}
+          {cuppingId && cuppingLots.length > 0 && (
+            <div className="flex items-center justify-between bg-white rounded-lg border border-warm-200 px-4 py-2">
+              <button onClick={() => navigateToLot(-1)} disabled={!canGoPrev}
+                className={`text-sm font-medium ${canGoPrev ? 'text-primary hover:text-primary-dark' : 'text-warm-300'}`}>
+                ← Пред. лот
+              </button>
+              <span className="text-sm font-semibold text-dark">{currentLotName || lotName || 'Лот'}</span>
+              <button onClick={() => navigateToLot(1)} disabled={!canGoNext}
+                className={`text-sm font-medium ${canGoNext ? 'text-primary hover:text-primary-dark' : 'text-warm-300'}`}>
+                След. лот →
+              </button>
+            </div>
+          )}
 
-        {/* Lot name (only when NOT inside a cupping, since cupping has the switcher) */}
-        {!cuppingId && lotName && (
-          <h2 className="font-display text-lg font-bold mb-4">{lotName}</h2>
-        )}
+          {/* Lot name (only when NOT inside a cupping) */}
+          {!cuppingId && lotName && (
+            <div className="bg-white rounded-lg border border-warm-200 px-4 py-2">
+              <h2 className="font-display text-lg font-bold">{lotName}</h2>
+            </div>
+          )}
+        </div>
 
         {/* Stage tabs */}
         <div className="flex gap-0.5 mb-6 bg-warm-100 p-1 rounded-lg overflow-x-auto">

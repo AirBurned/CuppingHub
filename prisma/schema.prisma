@@ -58,18 +58,20 @@ model User {
 }
 
 model Lot {
-  id              String              @id @default(cuid())
-  name            String
-  country         String
-  roaster         String
-  farm            String?
-  variety         String?
-  processing      Processing
-  roastLevel      RoastLevel
-  roastDate       DateTime?
-  descriptors     String?
-  photoUrl        String?
-  status          LotStatus           @default(ACTIVE)
+  id                String              @id @default(cuid())
+  name              String
+  country           String
+  roaster           String
+  farm              String?
+  variety           String?
+  processing        Processing
+  customProcessing  String?
+  roastLevel        RoastLevel
+  roastDate         DateTime?
+  altitude          String?
+  descriptors       String?
+  photoUrl          String?
+  status            LotStatus           @default(ACTIVE)
   evaluations     Evaluation[]
   recipes         Recipe[]
   comments        Comment[]

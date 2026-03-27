@@ -10,7 +10,7 @@ import { processingLabels, roastLevelLabels, brewMethodLabels, isAdmin } from '@
 interface Recipe { id: string; brewMethod: string; recipeType: string; dose: number | null; yield: number | null; waterAmount: number | null; ratio: string | null; grind: string | null; temperature: number | null; brewTime: string | null; notes: string | null; author: { name: string }; authorId: string }
 interface Comment { id: string; text: string; createdAt: string; userId: string; user: { name: string } }
 interface EvalData { user: { name: string }; aromaGround: number | null; aromaBrewed: number | null; flavor: number | null; aftertaste: number | null; acidity: number | null; body: number | null; sweetness: number | null; cleanCup: number | null; overall: number | null; defectScore: number | null; defectComment: string | null; descriptors: string | null; totalScore: number | null; [key: string]: unknown }
-interface LotDetail { id: string; name: string; country: string; roaster: string; farm: string | null; variety: string | null; processing: string; roastLevel: string; roastDate: string | null; descriptors: string | null; photoUrl: string | null; status: string; avgScore: number | null; evaluationsCount: number; hasEvaluated: boolean; recipes: Recipe[]; comments: Comment[] }
+interface LotDetail { id: string; name: string; country: string; roaster: string; farm: string | null; variety: string | null; processing: string; customProcessing: string | null; roastLevel: string; roastDate: string | null; altitude: string | null; descriptors: string | null; photoUrl: string | null; status: string; avgScore: number | null; evaluationsCount: number; hasEvaluated: boolean; recipes: Recipe[]; comments: Comment[] }
 
 export default function LotDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -169,9 +169,10 @@ export default function LotDetailPage() {
               <div><span className="text-warm-500">Обжарщик:</span><p className="font-medium">{lot.roaster}</p></div>
               {lot.farm && <div><span className="text-warm-500">Ферма:</span><p className="font-medium">{lot.farm}</p></div>}
               {lot.variety && <div><span className="text-warm-500">Разновидность:</span><p className="font-medium">{lot.variety}</p></div>}
-              <div><span className="text-warm-500">Обработка:</span><p className="font-medium">{processingLabels[lot.processing] || lot.processing}</p></div>
+              <div><span className="text-warm-500">Обработка:</span><p className="font-medium">{lot.processing === 'OTHER' && lot.customProcessing ? lot.customProcessing : processingLabels[lot.processing] || lot.processing}</p></div>
               <div><span className="text-warm-500">Обжарка:</span><p className="font-medium">{roastLevelLabels[lot.roastLevel] || lot.roastLevel}</p></div>
               {lot.roastDate && <div><span className="text-warm-500">Дата обжарки:</span><p className="font-medium">{new Date(lot.roastDate).toLocaleDateString('ru')}</p></div>}
+              {lot.altitude && <div><span className="text-warm-500">Высота:</span><p className="font-medium">{lot.altitude} м</p></div>}
             </div>
             {lot.descriptors && <p className="text-sm italic text-secondary mb-4">{lot.descriptors}</p>}
 

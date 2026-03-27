@@ -9,7 +9,7 @@ import { processingLabels, roastLevelLabels } from '@/lib/constants'
 export default function EditLotPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const [form, setForm] = useState({ name: '', country: '', roaster: '', farm: '', variety: '', processing: 'WASHED', roastLevel: 'LIGHT', roastDate: '', descriptors: '' })
+  const [form, setForm] = useState({ name: '', country: '', roaster: '', farm: '', variety: '', processing: 'WASHED', customProcessing: '', roastLevel: 'LIGHT', roastDate: '', altitude: '', descriptors: '' })
   const [photoUrl, setPhotoUrl] = useState('')
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -22,8 +22,10 @@ export default function EditLotPage() {
         setForm({
           name: lot.name, country: lot.country, roaster: lot.roaster,
           farm: lot.farm || '', variety: lot.variety || '',
-          processing: lot.processing, roastLevel: lot.roastLevel,
+          processing: lot.processing, customProcessing: lot.customProcessing || '',
+          roastLevel: lot.roastLevel,
           roastDate: lot.roastDate ? lot.roastDate.split('T')[0] : '',
+          altitude: lot.altitude || '',
           descriptors: lot.descriptors || '',
         })
         setPhotoUrl(lot.photoUrl || '')
@@ -55,7 +57,7 @@ export default function EditLotPage() {
     setSaving(true); setError('')
     const res = await fetch(`/api/lots/${id}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, photoUrl: photoUrl || null }),
+      body: JSON.stringify({ ...form, customProcessing: form.processing === 'OTHER' ? form.customProcessing : '', photoUrl: photoUrl || null }),
     })
     if (res.ok) { router.push(`/lots/${id}`); router.refresh() }
     else { const d = await res.json(); setError(d.error || 'Ошибка'); setSaving(false) }
@@ -78,9 +80,17 @@ export default function EditLotPage() {
               <div><label className="block text-xs text-warm-500 mb-1">Обжарщик *</label><input type="text" value={form.roaster} onChange={(e) => setForm({ ...form, roaster: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" required /></div>
               <div><label className="block text-xs text-warm-500 mb-1">Ферма</label><input type="text" value={form.farm} onChange={(e) => setForm({ ...form, farm: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" /></div>
               <div><label className="block text-xs text-warm-500 mb-1">Разновидность</label><input type="text" value={form.variety} onChange={(e) => setForm({ ...form, variety: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" /></div>
-              <div><label className="block text-xs text-warm-500 mb-1">Обработка *</label><select value={form.processing} onChange={(e) => setForm({ ...form, processing: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">{Object.entries(processingLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+              <div>
+                <label className="block text-xs text-warm-500 mb-1">Обработка *</label>
+                <select value={form.processing} onChange={(e) => setForm({ ...form, processing: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">{Object.entries(processingLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+                {form.processing === 'OTHER' && (
+                  <input type="text" value={form.customProcessing} onChange={(e) => setForm({ ...form, customProcessing: e.target.value })}
+                    placeholder="Укажите способ обработки..." className="w-full mt-1 px-3 py-2 rounded-lg border border-primary/40 bg-primary/5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                )}
+              </div>
               <div><label className="block text-xs text-warm-500 mb-1">Обжарка *</label><select value={form.roastLevel} onChange={(e) => setForm({ ...form, roastLevel: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">{Object.entries(roastLevelLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
               <div><label className="block text-xs text-warm-500 mb-1">Дата обжарки</label><input type="date" value={form.roastDate} onChange={(e) => setForm({ ...form, roastDate: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" /></div>
+              <div><label className="block text-xs text-warm-500 mb-1">Высота (м)</label><input type="text" value={form.altitude} onChange={(e) => setForm({ ...form, altitude: e.target.value })} placeholder="1800-2200" className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" /></div>
             </div>
             <div><label className="block text-xs text-warm-500 mb-1">Дескрипторы</label><input type="text" value={form.descriptors} onChange={(e) => setForm({ ...form, descriptors: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" /></div>
             <div>
