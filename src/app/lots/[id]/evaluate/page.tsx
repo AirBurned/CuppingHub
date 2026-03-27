@@ -153,19 +153,6 @@ export default function EvaluatePage() {
     router.push(`/lots/${nextLot.id}/evaluate?cupping=${cuppingId}&lotIndex=${nextIdx}&totalLots=${cuppingLots.length}`)
   }
 
-  // Touch swipe detection
-  const [touchStart, setTouchStart] = useState<number | null>(null)
-  function handleTouchStart(e: React.TouchEvent) {
-    setTouchStart(e.touches[0].clientX)
-  }
-  function handleTouchEnd(e: React.TouchEvent) {
-    if (touchStart === null) return
-    const diff = e.changedTouches[0].clientX - touchStart
-    if (Math.abs(diff) > 80) {
-      navigateToLot(diff > 0 ? -1 : 1)
-    }
-    setTouchStart(null)
-  }
 
   if (loading) return <div className="min-h-screen bg-light"><Header /><div className="text-center text-warm-500 py-12">Загрузка...</div></div>
 
@@ -198,7 +185,7 @@ export default function EvaluatePage() {
   const canGoNext = cuppingLots.length > 0 && cuppingLots.findIndex((l) => l.id === id) < cuppingLots.length - 1
 
   return (
-    <div className="min-h-screen bg-light" onTouchStart={cuppingId ? handleTouchStart : undefined} onTouchEnd={cuppingId ? handleTouchEnd : undefined}>
+    <div className="min-h-screen bg-light">
       <Header />
       <main className="max-w-2xl mx-auto px-4 py-6">
         <button onClick={() => router.back()} className="text-sm text-warm-500 hover:text-dark mb-4 transition-colors">← Назад</button>
