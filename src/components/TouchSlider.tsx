@@ -10,6 +10,21 @@ interface TouchSliderProps {
   step?: number
 }
 
+function getGradientColor(pct: number): string {
+  // 0% = red, 50% = yellow, 100% = green
+  if (pct <= 50) {
+    const r = 220
+    const g = Math.round(40 + (180 * pct) / 50) // 40 → 220
+    const b = 40
+    return `rgb(${r}, ${g}, ${b})`
+  } else {
+    const r = Math.round(220 - (180 * (pct - 50)) / 50) // 220 → 40
+    const g = 200
+    const b = 40
+    return `rgb(${r}, ${g}, ${b})`
+  }
+}
+
 export default function TouchSlider({ value, onChange, min = 1, max = 10, step = 0.25 }: TouchSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
@@ -59,15 +74,18 @@ export default function TouchSlider({ value, onChange, min = 1, max = 10, step =
       onTouchEnd={handleEnd}
       style={{ touchAction: 'none' }}
     >
-      {/* Track background */}
-      <div className="absolute left-0 right-0 h-2 rounded-full bg-warm-200">
+      {/* Track background with gradient */}
+      <div className="absolute left-0 right-0 h-2 rounded-full bg-warm-200 overflow-hidden">
+        <div className="absolute inset-0 rounded-full opacity-30"
+          style={{ background: 'linear-gradient(to right, #dc4040, #dcdc40, #40c840)' }} />
         {/* Filled part */}
-        <div className="absolute left-0 top-0 h-full rounded-full bg-primary/60" style={{ width: `${pct}%` }} />
+        <div className="absolute left-0 top-0 h-full rounded-full transition-colors duration-150"
+          style={{ width: `${pct}%`, backgroundColor: getGradientColor(pct) }} />
       </div>
       {/* Thumb */}
       <div
-        className="absolute w-7 h-7 rounded-full bg-primary border-[3px] border-white shadow-md -translate-x-1/2"
-        style={{ left: `${pct}%` }}
+        className="absolute w-7 h-7 rounded-full border-[3px] border-white shadow-md -translate-x-1/2 transition-colors duration-150"
+        style={{ left: `${pct}%`, backgroundColor: getGradientColor(pct) }}
       />
     </div>
   )

@@ -37,9 +37,19 @@ export default function EvaluatePage() {
   const [currentStage, setCurrentStage] = useState(0)
 
   // Cupping lots for swipe navigation
-  const [cuppingLots, setCuppingLots] = useState<{ id: string; name: string }[]>([])
+  const [cuppingLots, setCuppingLots] = useState<{ id: string; name: string; photoUrl?: string | null }[]>([])
+  const [lotPhoto, setLotPhoto] = useState<string | null>(null)
+  const [lotName, setLotName] = useState<string>('')
 
   useEffect(() => {
+    // Load lot details (name, photo)
+    fetch(`/api/lots/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.photoUrl) setLotPhoto(data.photoUrl)
+        if (data.name) setLotName(data.name)
+      })
+
     fetch(`/api/lots/${id}/evaluate`)
       .then((res) => res.json())
       .then((data) => {
@@ -191,6 +201,16 @@ export default function EvaluatePage() {
       <Header />
       <main className="max-w-2xl mx-auto px-4 py-6">
         <button onClick={() => router.back()} className="text-sm text-warm-500 hover:text-dark mb-4 transition-colors">← Назад</button>
+
+        {/* Lot photo + name */}
+        {(lotPhoto || lotName) && (
+          <div className="flex items-center gap-4 mb-4 bg-white rounded-xl border border-warm-200 p-3 overflow-hidden">
+            {lotPhoto && (
+              <img src={lotPhoto} alt={lotName} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+            )}
+            <h2 className="font-display text-lg font-bold truncate">{lotName}</h2>
+          </div>
+        )}
 
         {/* Lot navigation in cupping */}
         {cuppingId && cuppingLots.length > 0 && (

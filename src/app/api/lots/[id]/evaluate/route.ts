@@ -23,6 +23,19 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   return NextResponse.json(evaluation)
 }
 
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
+  if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+    return NextResponse.json({ error: 'Нет доступа' }, { status: 403 })
+  }
+  const { userId } = await request.json()
+  if (!userId) return NextResponse.json({ error: 'userId обязателен' }, { status: 400 })
+  await prisma.evaluation.deleteMany({ where: { lotId: id, userId } })
+  return NextResponse.json({ ok: true })
+}
+
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const user = await getUser()

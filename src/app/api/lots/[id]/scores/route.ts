@@ -14,6 +14,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   })
 
   const myEvaluation = evaluations.find((e) => e.userId === user.userId)
+  const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
 
-  return NextResponse.json({ evaluations, myEvaluation, locked: false })
+  return NextResponse.json({ evaluations, myEvaluation, locked: false, isAdmin })
 }
