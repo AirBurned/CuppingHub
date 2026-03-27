@@ -203,9 +203,9 @@ export default function EvaluatePage() {
       <main className="max-w-2xl mx-auto px-4 py-6">
         <button onClick={() => router.back()} className="text-sm text-warm-500 hover:text-dark mb-4 transition-colors">← Назад</button>
 
-        {/* Lot photo */}
+        {/* Lot photo — same crop as lot detail card */}
         {lotPhoto && (
-          <div className="mb-4 rounded-xl overflow-hidden border border-warm-200" style={{ maxHeight: '16.6dvh' }}>
+          <div className="mb-4 rounded-xl overflow-hidden border border-warm-200 h-48 sm:h-64">
             <img src={lotPhoto} alt={lotName} className="w-full h-full object-cover" />
           </div>
         )}
